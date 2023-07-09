@@ -1,5 +1,5 @@
-// https://atcoder.jp/contests/ahc002/submissions/22068837
-// 2786822
+// https://atcoder.jp/contests/ahc002/submissions/22069393
+// 3115942
 
 #pragma GCC target("avx2")
 #pragma GCC optimize("O3")
@@ -41,39 +41,39 @@ typedef pair<int, int> Pii;
 typedef pair<ll, ll> Pll;
 
 enum Dir{
-    U, D, L, R, N
+    U,D,L,R,N
 };
 
 Dir DIR_SET[24][4] = {
-    {U, D, L, R},
-    {U, D, R, L},
-    {U, L, D, R},
-    {U, L, R, D},
-    {U, R, D, L},
-    {U, R, L, D},
-    {D, U, L, R},
-    {D, U, R, L},
-    {D, L, U, R},
-    {D, L, R, U},
-    {D, R, U, L},
-    {D, R, L, U},
-    {L, U, D, R},
-    {L, U, R, D},
-    {L, R, U, D},
-    {L, R, D, U},
-    {L, D, U, R},
-    {L, D, R, U},
-    {R, U, D, L},
-    {R, U, L, D},
-    {R, L, U, D},
-    {R, L, D, U},
-    {R, D, U, L},
-    {R, D, L, U}
+    {U,D,L,R},
+    {U,D,R,L},
+    {U,L,D,R},
+    {U,L,R,D},
+    {U,R,D,L},
+    {U,R,L,D},
+    {D,U,L,R},
+    {D,U,R,L},
+    {D,L,U,R},
+    {D,L,R,U},
+    {D,R,U,L},
+    {D,R,L,U},
+    {L,U,D,R},
+    {L,U,R,D},
+    {L,R,U,D},
+    {L,R,D,U},
+    {L,D,U,R},
+    {L,D,R,U},
+    {R,U,D,L},
+    {R,U,L,D},
+    {R,L,U,D},
+    {R,L,D,U},
+    {R,D,U,L},
+    {R,D,L,U}
 };
 
-constexpr int H = 50, W = 50;
+constexpr int H=50, W=50;
 constexpr int TIME_LIMIT = 1900;
-int sy, sx;
+int sy,sx;
 vector<Dir> T;
 vector<uint8_t> P;
 
@@ -331,74 +331,112 @@ void input(){
     }
 }
 
-void solve(){
-    vector<Dir> best_sol; // UDLRの文字列
-    ll best_eval = 0;
-    int g = 0;
-    int update_count = 0;
-    vector<Dir> sol; // UDLRの文字列
-    while(timer.ms() < TIME_LIMIT) {
-        g++;
-        int si = 0;
-        vector<bool> cantMove(H*W, false);
-        Pos nowP = S;
-        cantMove[idx(nowP)] = true; // 最初の点をtrue
-        // 同じ値の場所をtrue
-        {
-            const auto adjP = nowP + T[idx(nowP)];
-            cantMove[idx(adjP)] = true;
-        }
-        ll sum = 0; // score
-        while(true){
-            sum += P[idx(nowP)];
-            int ri = xorshift()%24;
-            Dir next_dir = N;
-            if(si < sol.size()){
-                next_dir = sol[si];
-            }else{
-                // DIR_SETの順に探索して進める方向に進む、進めなかったらbreak
-                rep(rj,4){
-                    const Dir dir = DIR_SET[ri][rj];
-                    Pos kohoP = nowP + dir;
-                    if(!kohoP.in_range()) continue; // 範囲外なら除外
-                    if(cantMove[idx(kohoP)]) continue; // 既に訪れていたら除外
-                    next_dir = dir;
-                    break;
-                }
-                if(next_dir == N) break; // ここで抜ける
-                sol.push_back(next_dir);
-            }
-            const Pos nextP = nowP + next_dir;
-            cantMove[idx(nextP)] = true;
-            Pos adjP = nextP + T[idx(nextP)];
-            cantMove[idx(adjP)] = true;
-            nowP = nextP;
-            si++;
-        }
+// void solve(){
+//     vector<Dir> best_sol;
+//     ll best_eval = 0;
+//     int g = 0;
+//     int update_count = 0;
+//     vector<Dir> sol;
+//     while(timer.ms() < TIME_LIMIT){
+//         g++;
+//         int si = 0;
+//         vector<bool> cantMove = vector<bool>(H*W);
+//         Pos nowP = S;
+//         cantMove[idx(nowP)] = true;
+//         {
+//             const auto adjP = nowP + T[idx(nowP)];
+//             cantMove[idx(adjP)] = true;
+//         }
+//         ll sum = 0;
+//         while(true){
+//             sum += P[idx(nowP)];
+//             int ri = xorshift()%24;
+//             Dir next_dir = N;
+//             if(si < sol.size()){
+//                 next_dir = sol[si];
+//             }else{
+//                 rep(rj,4){
+//                     const Dir dir = DIR_SET[ri][rj];
+//                     Pos kohoP = nowP + dir;
+//                     if(!kohoP.in_range()) continue;
+//                     if(cantMove[idx(kohoP)]) continue;
+//                     next_dir = dir;
+//                     break;
+//                 }
+//                 if(next_dir == N) break;
+//                 sol.push_back(next_dir);
+//             }
+//             const Pos nextP = nowP + next_dir;
+//             cantMove[idx(nextP)] = true;
+//             Pos adjP = nextP + T[idx(nextP)];
+//             cantMove[idx(adjP)] = true;
+//             nowP = nextP;
+//             si++;
+//         }
 
-        if(best_eval < sum){
-            best_sol = sol;
-            best_eval = sum;
-            update_count++;
-        }
+//         if(best_eval < sum){
+//             best_sol = sol;
+//             best_eval = sum;
+//             update_count++;
+//         }
 
-        if((xorshift()&0b111111) == 0){
-            sol.clear();
-        }else{
-            sol.resize(max(0, (int)sol.size()-5));
-        }
+//         if((xorshift()&0b111111) == 0){
+//             sol.clear();
+//         }else{
+//             sol.resize(max(0, (int)sol.size()-5));
+//         }
+//     }
+//     rep(i,best_sol.size()){
+//         cout<<best_sol[i];
+//     }
+//     cout<<endl;
+//     cerr<<"eval:"<<best_eval<<endl;
+//     cerr<<"g:"<<g<<endl;
+//     cerr<<"update:"<<update_count<<endl;
+// }
+vector<Dir> best_path;
+ll best_score = 0;
+
+bool saiki(const Pos& nowP, ll ruiseki_score, bitset<H*W>& cant_move, vector<Dir>& path){
+    if(timer.ms() >= TIME_LIMIT) return false;
+    for(const Dir dir : DIRS4){
+        const Pos nextP = nowP + dir;
+        if(!nextP.in_range()) continue;
+        const int next_idx = idx(nextP);
+        if(cant_move[next_idx]) continue;
+        // ↑ここまでで例外処理
+        ll score = P[next_idx];
+        cant_move[next_idx] = true;
+        const Pos adjP = nextP + T[next_idx];
+        const int adj_idx = idx(adjP);
+        cant_move[adj_idx] = true;
+        path.push_back(dir);
+        bool can_continue = saiki(nextP, ruiseki_score + score, cant_move, path);
+        if(!can_continue) return false;
+        cant_move[next_idx] = false;
+        cant_move[adj_idx] = false;
+        path.pop_back();
     }
-    rep(i,best_sol.size()){
-        cout<<best_sol[i];
+    if(ruiseki_score > best_score){
+        best_score = ruiseki_score;
+        best_path = path;
     }
-    cout<<endl;
-    cerr<<"eval:"<<best_eval<<endl;
-    cerr<<"g:"<<g<<endl;
-    cerr<<"update:"<<update_count<<endl;
+    return true;
 }
 
-void saiki(Pos& nowP, ll score, vector<bool> cant_move){
-    
+void solve(){
+    bitset<H*W> cant_move = 0;
+    cant_move[idx(S)] = true;
+    const Pos adjP = S + T[idx(S)];
+    cant_move[idx(adjP)] = true;
+    ll score = P[idx(S)];
+    vector<Dir> path;
+    saiki(S, score, cant_move, path);
+    for(auto dir : best_path){
+        cout<<dir;
+    }
+    cout<<endl;
+    cerr<<"eval:"<<best_score<<endl;
 }
 
 int main(void){
@@ -410,8 +448,4 @@ int main(void){
     return 0;
 }
 
-// やっていること
-// 1. 方向の集合(DIR_SET)を用意する(UDLRの順列24個)
-// 2. 始点からランダムに抜き出したDIR_SETの方向に進める
-// 3. 進めなくなるまで繰り返し行い、best_scoreのものを残しておく
-// 4. 1~3を繰り返す
+// どうやらbitsetで高速化しているらしい
