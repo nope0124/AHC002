@@ -67,13 +67,25 @@ bool dfs(ll x, ll y, ll cur_score, string ans, TimeKeeper time_keeper) {
     reached[y][x] = true;
     reached[y + dy[tile_direction[y][x]]][x + dx[tile_direction[y][x]]] = true;
 
+    vector<pll> cur_dir;
     rep(i, 4) {
         ll nx = x + dx[i];
         ll ny = y + dy[i];
         if(!is_range(nx, ny)) continue;
         if(reached[ny][nx]) continue;
-        bool time_limit = dfs(nx, ny, cur_score + point[ny][nx], ans + dir[i], time_keeper);
-        if(time_limit) return true;
+        cur_dir.push_back(pll(-((N/2-nx)*(N/2-nx) + (N/2-ny)*(N/2-ny)), i));
+    }
+
+    if(cur_dir.size() != 0) {
+        sort(ALL(cur_dir));
+        rep(i, cur_dir.size()) {
+            ll nx = x + dx[cur_dir[i].second];
+            ll ny = y + dy[cur_dir[i].second];
+            if(!is_range(nx, ny)) continue;
+            if(reached[ny][nx]) continue;
+            bool time_limit = dfs(nx, ny, cur_score + point[ny][nx], ans + dir[cur_dir[i].second], time_keeper);
+            if(time_limit) return true;
+        }
     }
 
     if(old_score < cur_score) {
